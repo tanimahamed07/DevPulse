@@ -27,6 +27,17 @@ const createIssues = async (req: Request, res: Response) => {
   });
 };
 
+const getAllIssues = async (req: Request, res: Response) => {
+  const result = await issuesService.getAllIssuesService(req.query);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    data: result,
+  });
+};
+
 export const issuesController = {
   createIssues,
+  getAllIssues,
 };

@@ -10,7 +10,7 @@ interface IssuesQuery {
 interface ICreateIssuePayload {
   title: string;
   description: string;
-  type: "bug" | "feature_request"; 
+  type: "bug" | "feature_request";
   reporter_id: number;
 }
 
@@ -184,9 +184,31 @@ const updateIssueService = async (
   return result.rows[0];
 };
 
+const deleteIssueService = async (id: string) => {
+  const issueResult = await pool.query(`SELECT * FROM issues WHERE id = $1`, [
+    id,
+  ]);
+
+  if (issueResult.rowCount === 0) {
+    throw new Error("Issue not found");
+  }
+  const deleteIssue = await pool.query(`DELETE FROM issues WHERE id = $1`, [
+    id,
+  ]);
+
+  if (deleteIssue.rowCount && deleteIssue.rowCount > 0) {
+    return {
+      success: true,
+      message: "Issue deleted successfully",
+      deletedIssue: issueResult.rows[0],
+    };
+  }
+};
+
 export const issuesService = {
   createIssuesService,
   getAllIssuesService,
   getSingleIssueService,
   updateIssueService,
+  deleteIssueService,
 };

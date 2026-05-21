@@ -12,5 +12,11 @@ route.patch(
   authorizeRoles("maintainer", "contributor"),
   issuesController.updateIssue,
 );
+route.delete(
+  "/:id",
+  auth,
+  authorizeRoles("maintainer"),
+  issuesController.deleteIssue,
+);
 
 export const issuesRouter = route;

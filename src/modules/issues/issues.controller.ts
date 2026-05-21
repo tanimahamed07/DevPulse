@@ -38,26 +38,45 @@ const getAllIssues = async (req: Request, res: Response) => {
 };
 
 const getSingleIssue = async (req: Request, res: Response) => {
+  const result = await issuesService.getSingleIssueService(
+    req.params.id as string,
+  );
 
-
-    const result = await issuesService.getSingleIssueService(req.params.id as string);
-
-    if (!result) {
-      return res.status(404).json({
-        success: false,
-        message: "Issue not found",
-      });
-    }
-
-    return res.status(200).json({
-      success: true,
-      data: result,
+  if (!result) {
+    return res.status(404).json({
+      success: false,
+      message: "Issue not found",
     });
+  }
 
+  return res.status(200).json({
+    success: true,
+    data: result,
+  });
+};
+
+const updateIssue = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const payload = req.body;
+  const currentUser = req.user;
+
+  const result = await issuesService.updateIssueService(
+    id as string,
+    payload,
+    currentUser,
+  );
+
+  return sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Issue updated successfully",
+    data: result,
+  });
 };
 
 export const issuesController = {
   createIssues,
   getAllIssues,
   getSingleIssue,
+  updateIssue,
 };

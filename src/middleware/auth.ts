@@ -46,3 +46,29 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
     });
   }
 };
+
+type Role = "contributor" | "maintainer";
+
+export const authorizeRoles = (...roles: Role[]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return sendResponse(res, {
+        statusCode: 401,
+        success: false,
+        message: "Unauthorized",
+        error: "Missing, expired, or invalid JWT token",
+      });
+    }
+
+    if (!roles.includes(req.user.role as Role)) {
+      return sendResponse(res, {
+        statusCode: 403,
+        success: false,
+        message: "Forbidden",
+        error: "Valid token but insufficient role/permissions",
+      });
+    }
+
+    return next();
+  };
+};

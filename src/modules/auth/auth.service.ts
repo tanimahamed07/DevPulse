@@ -44,7 +44,7 @@ export const loginUserService = async (payload: {
   ]);
 
   if (userData.rows.length === 0) {
-    throw new Error("Invalid email or password"); // Safety security structure standard matching
+    throw new Error("Invalid email or password"); 
   }
 
   const user = userData.rows[0];

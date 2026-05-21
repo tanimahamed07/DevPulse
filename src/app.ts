@@ -4,7 +4,7 @@ import express, {
   type Response,
 } from "express";
 import globalErrorHandler from "./middleware/globalErrorHandler";
-import { authRouter } from "./modules/auth/authRoute";
+import { authRouter } from "./modules/auth/auth.route";
 
 const app: Application = express();
 app.use(express.json());

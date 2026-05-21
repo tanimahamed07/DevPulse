@@ -7,7 +7,7 @@ import globalErrorHandler from "./middleware/globalErrorHandler";
 import { authRouter } from "./modules/auth/authRoute";
 
 const app: Application = express();
-
+app.use(express.json());
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World");
 });

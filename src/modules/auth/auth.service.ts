@@ -1,6 +1,8 @@
 import type { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { pool } from "../../db";
+import jwt from "jsonwebtoken";
+import { config } from "../../config/env";
 
 const registerUserService = async (payload: {
   email: string;
@@ -32,6 +34,51 @@ const registerUserService = async (payload: {
   return newUser.rows[0];
 };
 
+export const loginUserService = async (payload: {
+  email: string;
+  password: string;
+}) => {
+  const { email, password } = payload;
+  const userData = await pool.query(`SELECT * FROM users WHERE email = $1`, [
+    email,
+  ]);
+
+  if (userData.rows.length === 0) {
+    throw new Error("Invalid email or password"); // Safety security structure standard matching
+  }
+
+  const user = userData.rows[0];
+
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+
+  if (!isPasswordValid) {
+    throw new Error("Invalid email or password");
+  }
+
+  const jwtPayload = {
+    id: user.id,
+    name: user.name,
+    role: user.role,
+  };
+
+  const token = jwt.sign(jwtPayload, config.jwt_secret as string, {
+    expiresIn: "7d",
+  });
+
+  return {
+    token,
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+    },
+  };
+};
+
 export const authService = {
   registerUserService,
+  loginUserService,
 };
